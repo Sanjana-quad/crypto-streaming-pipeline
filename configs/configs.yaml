@@ -1,0 +1,13 @@
+kafka:
+  bootstrap_servers: "localhost:9092"
+  topic: "crypto_prices"
+
+producer:
+  interval_seconds: 10
+  max_retries: 3
+
+api:
+  base_url: "https://api.coingecko.com/api/v3"
+  endpoint: "/coins/markets"
+  vs_currency: "usd"
+  per_page: 10

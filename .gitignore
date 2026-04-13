@@ -1,0 +1,74 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.sqlite3
+
+# Virtual env
+env/
+venv/
+data-eng-env/
+
+# =========================
+# Spark / Streaming Output
+# =========================
+data/
+!data/.gitkeep
+
+# Checkpoints (VERY IMPORTANT to ignore)
+checkpoints/
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+secrets/
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+.codex/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Docker
+# =========================
+*.pid
+docker-compose.override.yml
+
+# =========================
+# Streamlit cache
+# =========================
+.streamlit/
+
+# =========================
+# Hadoop / Spark temp
+# =========================
+tmp/
+*.crc
+.metastore_db/
