@@ -2,12 +2,12 @@ import streamlit as st
 import time
 import os
 import pandas as pd
-from src.utils.config_loader import load_config
+
 
 st.set_page_config(page_title="Streaming Dashboard", layout="wide")
 st.title("⚡ Crypto Real-Time Streaming Dashboard")
 
-DATA_PATH = load_config()["paths"]["stream_output"]
+DATA_PATH = "dashboard/streaming/sample_data"
 
 placeholder = st.empty()
 
