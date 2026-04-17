@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 import os
-from pyspark.sql import SparkSession
+import pandas as pd
 from src.utils.config_loader import load_config
 
 st.set_page_config(page_title="Streaming Dashboard", layout="wide")
@@ -9,18 +9,12 @@ st.title("⚡ Crypto Real-Time Streaming Dashboard")
 
 DATA_PATH = load_config()["paths"]["stream_output"]
 
-@st.cache_resource
-def get_spark():
-    return SparkSession.builder.getOrCreate()
-
-spark = get_spark()
 placeholder = st.empty()
 
 while True:
     try:
         if os.path.exists(DATA_PATH):
-            df = spark.read.parquet(DATA_PATH).limit(1000)
-            pdf = df.toPandas()
+            pdf = pd.read_parquet(DATA_PATH)
         else:
             pdf = None
 
@@ -29,20 +23,32 @@ while True:
 
             if pdf is not None and not pdf.empty:
 
-                pdf["window_start"] = pdf["window"].apply(lambda x: x["start"])
-                pdf["window_end"] = pdf["window"].apply(lambda x: x["end"])
+                # Handle Spark window struct safely
+                if "window" in pdf.columns:
+                    pdf["window_start"] = pdf["window"].apply(
+                        lambda x: x["start"] if isinstance(x, dict) else None
+                    )
+                    pdf["window_end"] = pdf["window"].apply(
+                        lambda x: x["end"] if isinstance(x, dict) else None
+                    )
+                else:
+                    pdf["window_start"] = None
+                    pdf["window_end"] = None
 
                 col1, col2 = st.columns(2)
 
                 col1.metric("Avg Price", round(pdf["avg_price"].mean(), 2))
                 col2.metric("Records", len(pdf))
 
-                st.line_chart(
-                    pdf.sort_values("window_start")
-                       .set_index("window_start")["avg_price"]
-                )
+                if "window_start" in pdf.columns and pdf["window_start"].notna().any():
+                    st.line_chart(
+                        pdf.sort_values("window_start")
+                           .set_index("window_start")["avg_price"]
+                    )
 
                 st.dataframe(pdf.tail(10))
+
+                st.caption("⚡ Updates every 5 seconds (Spark streaming output)")
 
             else:
                 st.warning("Waiting for streaming data...")
